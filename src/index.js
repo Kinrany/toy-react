@@ -3,23 +3,60 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 
-class Square extends React.Component {
-  render() {
-    return (
-      <button className="square">
-        {/* TODO */}
-      </button>
-    );
-  }
+function Square(props) {
+  return (
+    <button
+      className="square"
+      onClick={props.onClick}
+    >
+      {props.value}
+    </button>
+  );
 }
 
 class Board extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      values: Array(9).fill(null),
+      player: 'X'
+    }
+  }
+
+  getWinner() {
+    return calculateWinner(this.state.values);
+  }
+
+  handleClick(i) {
+    if (this.getWinner() !== null) {
+      return;
+    }
+
+    const values = this.state.values.slice();
+    values[i] = this.state.player;
+    const player = (this.state.player === 'X') ? 'O' : 'X';
+    this.setState({ values, player });
+  }
+
   renderSquare(i) {
-    return <Square />;
+    return (
+      <Square
+        value={this.state.values[i]}
+        onClick={() => this.handleClick(i)}
+      />
+    );
   }
 
   render() {
-    const status = 'Next player: X';
+    const winner = this.getWinner();
+
+    let status;
+    if (winner) {
+      status = `Winner: ${winner}`;
+    }
+    else {
+      status = `Next player: ${this.state.player}`;
+    }
 
     return (
       <div>
@@ -42,6 +79,32 @@ class Board extends React.Component {
       </div>
     );
   }
+}
+
+function calculateWinner(board) {
+  // [0, 1, 2,
+  //  3, 4, 5,
+  //  6, 7, 8]
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+  ];
+
+  const values = lines.map(line => line.map(index => board[index]));
+
+  for (const [a, b, c] of values) {
+    if (a !== null && a === b && a === c) {
+      return a;
+    }
+  }
+
+  return null;
 }
 
 class Game extends React.Component {
