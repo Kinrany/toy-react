@@ -75,8 +75,7 @@ class Game extends React.Component {
     }
 
     const newGameState = gameState.makeMove(i);
-    const history = this.state.history.slice();
-    history.push(newGameState);
+    const history = this.state.history.concat([newGameState]);
     this.setState({ history });
   }
 
