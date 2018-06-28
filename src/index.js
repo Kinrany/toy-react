@@ -16,24 +16,16 @@ function Square(props) {
 }
 
 function Board(props) {
-  const winner = props.state.getWinner();
 
-  const status = winner ?
-    `Winner: ${winner}` :
-    `Next player: ${props.state.player}`;
-
-  const renderSquare = (i) => {
-    return (
-      <Square
-        value={props.state.board[i]}
-        onClick={() => props.onClick(i)}
-      />
-    );
-  }
+  const renderSquare = (i) => (
+    <Square
+      value={props.state.board[i]}
+      onClick={() => props.onClick(i)}
+    />
+  );
 
   return (
     <div>
-      <div className="status">{status}</div>
       <div className="board-row">
         {renderSquare(0)}
         {renderSquare(1)}
@@ -51,6 +43,13 @@ function Board(props) {
       </div>
     </div>
   );
+}
+
+function GameState_getStatus(state) {
+  const winner = state.getWinner();
+  return winner ?
+    `Winner: ${winner}` :
+    `Next player: ${state.player}`;
 }
 
 class Game extends React.Component {
@@ -82,6 +81,8 @@ class Game extends React.Component {
   }
 
   render() {
+    const status = GameState_getStatus(this.getCurrentGameState());
+
     return (
       <div className="game">
         <div className="game-board">
@@ -91,7 +92,7 @@ class Game extends React.Component {
           />
         </div>
         <div className="game-info">
-          <div>{/* status */}</div>
+          <div>{status}</div>
           <ol>{/* TODO */}</ol>
         </div>
       </div>
