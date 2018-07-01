@@ -82,6 +82,10 @@ class Game extends React.Component {
       return;
     }
 
+    if (gameState.board[i] !== null) {
+      return;
+    }
+
     const newGameState = gameState.makeMove(i);
     this.pushGameState(newGameState);
   }
