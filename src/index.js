@@ -104,7 +104,12 @@ class Game extends React.Component {
       const description = (moveId > 0) ? `Go to move # ${moveId}` : `Go to game start`;
       return (
         <li key={moveId}>
-          <button onClick={() => this.jumpTo(moveId)}>{description}</button>
+          <button
+            onClick={() => this.jumpTo(moveId)}
+            className={(this.state.currentStateId === moveId) ? "selected-move" : ""}
+          >
+            {description}
+          </button>
         </li>
       );
     });
