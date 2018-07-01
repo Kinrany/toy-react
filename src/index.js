@@ -58,13 +58,21 @@ class Game extends React.Component {
     super(props);
 
     this.state = {
-      history: [GameState.initial()] // TODO: replace with singly linked list
+      history: [GameState.initial()],
+      currentStateId: 0
     };
   }
 
   getCurrentGameState() {
-    const history = this.state.history;
-    return history[history.length - 1];
+    return this.state.history[this.state.currentStateId];
+  }
+
+  pushGameState(newState) {
+    const currentStateId = this.state.currentStateId + 1;
+    const history = this.state.history
+      .slice(0, currentStateId)
+      .concat([newState]);
+    this.setState({ history, currentStateId });
   }
 
   handleClick(i) {
@@ -75,12 +83,27 @@ class Game extends React.Component {
     }
 
     const newGameState = gameState.makeMove(i);
-    const history = this.state.history.concat([newGameState]);
-    this.setState({ history });
+    this.pushGameState(newGameState);
+  }
+
+  jumpTo(gameStateId) {
+    this.setState({
+      history: this.state.history,
+      currentStateId: gameStateId
+    });
   }
 
   render() {
     const status = GameState_getStatus(this.getCurrentGameState());
+
+    const moves = this.state.history.map((_move, moveId) => {
+      const description = (moveId > 0) ? `Go to move # ${moveId}` : `Go to game start`;
+      return (
+        <li key={moveId}>
+          <button onClick={() => this.jumpTo(moveId)}>{description}</button>
+        </li>
+      );
+    });
 
     return (
       <div className="game">
@@ -92,7 +115,7 @@ class Game extends React.Component {
         </div>
         <div className="game-info">
           <div>{status}</div>
-          <ol>{/* TODO */}</ol>
+          <ol>{moves}</ol>
         </div>
       </div>
     );
